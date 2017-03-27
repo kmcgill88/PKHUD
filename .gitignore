@@ -12,12 +12,14 @@
 *.pbxuser
 *.xcworkspace
 *.xccheckout
+*.xcuserstate
 
 # XCode 4
 xcuserdata
 
 # build products
 build/
+DerivedData/
 
 # Other source repository archive directories (protects when importing)
 .hg
@@ -32,3 +34,8 @@ ThirdParty/boost/*
 
 # Maya temporary
 .mayaSwatches/
+UserInterfaceState.xcuserstate
+
+fastlane/report.xml
+
+fastlane/test_output/report.html

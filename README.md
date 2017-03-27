@@ -1,8 +1,17 @@
-![PKHUD - Swift and easy.](https://raw.githubusercontent.com/pkluz/PKHUD/master/README_hero.png)
+[![Build Status](https://travis-ci.org/pkluz/PKHUD.svg?branch=master)](https://travis-ci.org/pkluz/PKHUD)
+[![License](https://img.shields.io/cocoapods/l/PKHUD.svg?style=flat)](https://cocoapods.org/pods/PKHUD) 
+[![Platform](https://img.shields.io/cocoapods/p/PKHUD.svg?style=flat)](http://cocoadocs.org/docsets/PKHUD/3.2.1/) 
+[![CocoaPod](https://img.shields.io/cocoapods/v/PKHUD.svg?style=flat)](https://cocoapods.org/pods/PKHUD)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+
+![PKHUD - Swift and easy](https://raw.githubusercontent.com/pkluz/PKHUD/master/README_hero.png)
+
+
+
 <br />
 <br />
 <br />
-A **Swift** based reimplementation of the Apple HUD (Volume, Ringer, Rotation,…) **for iOS 8**.
+A **Swift** based reimplementation of the Apple HUD (Volume, Ringer, Rotation,…) **for iOS 8** and up.
 <br />
 <br />
 ## Features
@@ -10,67 +19,124 @@ A **Swift** based reimplementation of the Apple HUD (Volume, Ringer, Rotation,�
 - Proper **rotation support**.
 - Size / **Device agnostic**.
 - Works on top of presented view controllers, alerts,...
-- Comes with several *free* resources - Checkmark, Cross, Progress Indicator,...
+- Comes with several *free* resources - Checkmark, Cross, Progress Indicator,…
+- …as well as **animated** ones.
 - Builds as an **iOS 8 framework**.
 
-## How To
-After adding the framework to your project, you need to import the module
+![PKHUD.gif](https://cloud.githubusercontent.com/assets/1275218/10124182/09f4c406-654f-11e5-9cab-0f2e6f470887.gif)
+
+## Installation
+**The recommended way is to use CocoaPods.**
+
+### CocoaPods
+
+To install PKHUD for Swift 2 using CocoaPods, include the following in your Podfile
+
+```ruby
+  pod 'PKHUD', '~> 3.0'
 ```
+
+To install PKHUD for Swift 3.x using CocoaPods, include the following in your Podfile
+
+```ruby
+  pod 'PKHUD', '~> 4.0'
+```
+
+### Carthage
+
+[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks.
+
+You can install Carthage with [Homebrew](http://brew.sh/) using the following command:
+
+```bash
+$ brew update
+$ brew install carthage
+```
+
+To integrate PKHUD into your Xcode project using Carthage, specify it in your `Cartfile`:
+
+```ogdl
+github "pkluz/PKHUD" ~> 4.0
+```
+
+Run `carthage update` to build the framework and drag the built `PKHUD.framework` into your Xcode project.
+
+## How To
+
+After adding the framework to your project, you need to import the module
+```swift
 import PKHUD
 ```
 
-As of the initial release, there is six out-of-the-box types of content views you can present. 
-
-- `HUDContentView.TextView(...)`
-provides a wide, three line text view, which you can use to display information.
-
-- `HUDContentView.ImageView(...)` - provides a square view, which you can use to display a single image within.
-
-- `HUDContentView.ProgressView(...)` - provides a square (indeterminate) progress view.
-
-- `HUDContentView.TitleView(...)` - provides a square view, which you can use to display a picture and a title (above the image).
-
-- `HUDContentView.SubtitleView(...)` - provides a square view, which you can use to display a picture and a subtitle (beneath the image).
-
-- `HUDContentView.StatusView(...)` - provides a square view, which you can use to display a picture, a title and a subtitle. This type of view replicates the Apple HUD one to one.
-
-You can present the HUD with a content view by using the controller.
-```
-var contentView = HUDContentView.ProgressView()
-HUDController.sharedController.contentView = contentView
-HUDController.sharedController.show()
+Now, you can proceed to show an arbitrary HUD (and have it automatically disappear a second later) like this:
+```swift
+HUD.flash(.success, delay: 1.0)
 ```
 
-You can dismiss it in a similar manner.
+_or_ with a completion handler:
+
+```swift
+HUD.flash(.success, delay: 1.0) { finished in 
+    // Completion Handler
+}
 ```
-HUDController.sharedController.hide(animated: true)
+
+alternatively, you can use the more verbose and flexible “plumbing” API:
+
+```swift
+PKHUD.sharedHUD.contentView = PKHUDSuccessView()
+PKHUD.sharedHUD.show()
+PKHUD.sharedHUD.hide(afterDelay: 1.0) { success in 
+    // Completion Handler
+}
 ```
-…or with a delay.
+
+You can also hot-swap content views - this can prove useful if you want to display a progress HUD first and transform it into a success or error HUD after an asynchronous operation has finished.
+```swift
+HUD.show(.progress)
+        
+// Now some long running task starts...
+delay(2.0) {
+    // ...and once it finishes we flash the HUD for a second.
+   HUD.flash(.success, delay: 1.0)
+}
 ```
-HUDController.sharedController.hide(afterDelay: 2.0)
-```
+
+Please note that there are _multiple_ types of content views that ship with PKHUD. You can find them as separate files in the project folder as well as in the `ContentViews` group in Xcode.
+
+## Communication _(Hat Tip AlamoFire)_
+
+- If you **need help**, use [Stack Overflow](http://stackoverflow.com/questions/tagged/pkhud). (Tag 'pkhud')
+- If you'd like to **ask a general question**, use [Stack Overflow](http://stackoverflow.com/questions/tagged/pkhud).
+- If you **found a bug**, open an issue.
+- If you **have a feature request**, open an issue.
+- If you **want to contribute**, submit a pull request.
+
 
 ## Customization
 
 There are two properties at your disposal to customize general behavior.
 
-- `HUDController.sharedController.dimsBackground: Bool` defines whether the background is slightly dimmed when the HUD is shown.
+- `PKHUD.sharedHUD.dimsBackground: Bool` defines whether the background is slightly dimmed when the HUD is shown.
 
-- `HUDController.sharedController.userInteractionOnUnderlyingViewsEnabled: Bool` defines whether the underlying views respond to touches while the HUD is shown.
+- `PKHUD.sharedHUD.userInteractionOnUnderlyingViewsEnabled: Bool` defines whether the underlying views respond to touches while the HUD is shown.
 
-Additionally you are free to create you own custom content views. They can either descend from `HUDContentView.SquareBaseView`, `HUDContentView.WideBaseView` or simply UIView.
+Additionally you are free to create you own custom content views. They can descend from any `UIView` type or the predefined base classes `PKHUDSquareBaseView` and `PKHUDWideBaseView`.
 
 **Note**: It's neither possible to customize the general look and feel, nor do I plan to add that feature. You are free to provide any content views you wish but the blurring, corner radius and shading will remain the same.
 
-## Disclaimer
+## Credits
 
-While basically feature complete and stable, make sure you understand that the API **will change as Swift matures** and some of the annoying compiler quirks are resolved.
+PKHUD is owned and maintained by Philip Kluz. Other mantainers are:
+
+- Piergiuseppe Longo [twitter](https://twitter.com/pglongo)
+
 
 ## License
 
 The MIT License (MIT)
 
-Copyright (c) 2014 Philip Kluz (Philip.Kluz@gmail.com)
+Copyright (c) 2015 Philip Kluz (Philip.Kluz@gmail.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
